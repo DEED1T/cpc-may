@@ -1,0 +1,7 @@
+import may.HelloWorld
+
+namespace demoSimple {
+	component Hello {
+		provides say : HelloWorld
+	}
+}

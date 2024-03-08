@@ -1,0 +1,19 @@
+import assembly.Demarre
+
+namespace composite {
+	component Server {
+		provides fourni : Demarre
+	}
+	component Client {
+		requires requis : Demarre
+		provides gogo : Runnable
+	}
+	component Assembly {
+		provides go : Runnable = cl.gogo
+		
+		part cl : Client {
+			bind requis to sv.fourni
+		}
+		part sv : Server
+	}
+}

@@ -1,0 +1,19 @@
+import tp.Start
+
+namespace simple {
+	component Simple {
+		provides starter : Start
+	}
+	component Client {
+		requires demarreur : Start
+		provides letsgo : Runnable
+	}
+	component Assembly {
+		provides assembly : Runnable = client.letsgo
+		
+		part client : Client {
+			bind demarreur to simpl.starter
+		}
+		part simpl : Simple
+	}
+}
