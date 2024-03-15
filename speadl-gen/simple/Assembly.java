@@ -32,6 +32,13 @@ public abstract class Assembly {
      * 
      */
     public Simple.Component simpl();
+
+    /**
+     * This can be called by the implementation to access the part and its provided ports.
+     * It will be initialized after the required ports are initialized and before the provided ports are initialized.
+     * 
+     */
+    public Traceur.Component traceur();
   }
 
   public static class ComponentImpl implements Assembly.Component, Assembly.Parts {
@@ -44,6 +51,8 @@ public abstract class Assembly {
       ((Client.ComponentImpl) this.client).start();
       assert this.simpl != null: "This is a bug.";
       ((Simple.ComponentImpl) this.simpl).start();
+      assert this.traceur != null: "This is a bug.";
+      ((Traceur.ComponentImpl) this.traceur).start();
       this.implementation.start();
       this.implementation.started = true;
     }
@@ -68,9 +77,20 @@ public abstract class Assembly {
       this.simpl = this.implem_simpl._newComponent(new BridgeImpl_simpl(), false);
     }
 
+    private void init_traceur() {
+      assert this.traceur == null: "This is a bug.";
+      assert this.implem_traceur == null: "This is a bug.";
+      this.implem_traceur = this.implementation.make_traceur();
+      if (this.implem_traceur == null) {
+      	throw new RuntimeException("make_traceur() in simple.Assembly should not return null.");
+      }
+      this.traceur = this.implem_traceur._newComponent(new BridgeImpl_traceur(), false);
+    }
+
     protected void initParts() {
       init_client();
       init_simpl();
+      init_traceur();
     }
 
     protected void init_assembly() {
@@ -109,8 +129,8 @@ public abstract class Assembly {
 
     private final class BridgeImpl_client implements Client.Requires {
       public final Start demarreur() {
-        return Assembly.ComponentImpl.this.simpl().
-        starter()
+        return Assembly.ComponentImpl.this.traceur().
+        out()
         ;
       }
     }
@@ -128,6 +148,22 @@ public abstract class Assembly {
 
     public final Simple.Component simpl() {
       return this.simpl;
+    }
+
+    private Traceur.Component traceur;
+
+    private Traceur implem_traceur;
+
+    private final class BridgeImpl_traceur implements Traceur.Requires {
+      public final Start in() {
+        return Assembly.ComponentImpl.this.simpl().
+        starter()
+        ;
+      }
+    }
+
+    public final Traceur.Component traceur() {
+      return this.traceur;
     }
   }
 
@@ -207,6 +243,13 @@ public abstract class Assembly {
    * 
    */
   protected abstract Simple make_simpl();
+
+  /**
+   * This should be overridden by the implementation to define how to create this sub-component.
+   * This will be called once during the construction of the component to initialize this sub-component.
+   * 
+   */
+  protected abstract Traceur make_traceur();
 
   /**
    * Not meant to be used to manually instantiate components (except for testing).

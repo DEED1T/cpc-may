@@ -17,8 +17,6 @@ public class Main {
 		System.out.println("---");
 		
 		assemblyComp.assembly().run();
-	
-		//TODO -> Définition d'un assemblage dans un composant composite : QUESTION 4
-		
+			
 	}
 }
