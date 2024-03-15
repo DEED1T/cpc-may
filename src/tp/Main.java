@@ -14,7 +14,11 @@ public class Main {
 		simplComp.starter().go();
 		simplCountComp.starter().go();
 		
+		System.out.println("---");
+		
 		assemblyComp.assembly().run();
+	
+		//TODO -> Définition d'un assemblage dans un composant composite : QUESTION 4
 		
 	}
 }
